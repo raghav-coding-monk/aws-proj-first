@@ -28,6 +28,7 @@ exports.register = (req, res) => {
         });
 
         // send email
+        
         const params = registerEmailParams(email, token);
 
         const sendEmailOnRegister = ses.sendEmail(params).promise();
@@ -40,9 +41,21 @@ exports.register = (req, res) => {
                 });
             })
             .catch(error => {
-                console.log('ses email on register', error);
+                console.log('SES failed, but bypassing for local testingsZ!');
+               	console.log('============= AWS SES ACTUAL ERROR =============');
+    		console.log(error); // 👈 This will output the exact rejection reason
+    
+                // Construct your activation link manually using your frontend port 3000
+                const activationLink = `http://43.204.217.9:3000/auth/activate/${token}`;
+                
+                console.log('====================================================');
+                console.log('👉 CLICK THIS LINK TO ACTIVATE YOUR ACCOUNT:');
+                console.log(activationLink);
+                console.log('====================================================');
+
+                // Return a success response to the frontend instead of an error message
                 res.json({
-                    message: `We could not verify your email. Please try again`
+                    message: `[TEST MODE] Email simulation active. Check your server terminal logs for the activation link!`
                 });
             });
     });
