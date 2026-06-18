@@ -22,12 +22,11 @@ const categoryRoutes = require('./routes/category');
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 // app.use(cors());
-<<<<<<< HEAD
+
 app.use(cors({ origin: process.env.CLIENT_URL }));
-=======
+
 app.use(cors({ origin: 'http://13.200.60.244:3000',
     credentials: true  }));
->>>>>>> 64d4afd (for category create)
 
 // middlewares
 app.use('/api', authRoutes);
