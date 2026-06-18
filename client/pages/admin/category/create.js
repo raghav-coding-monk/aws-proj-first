@@ -11,24 +11,34 @@ const Create = ({ user, token }) => {
         content: '',
         error: '',
         success: '',
-        formData: process.browser && new FormData(),
+        formData: '',
         buttonText: 'Create',
         imageUploadText: 'Upload image'
     });
 
     const { name, content, success, error, formData, buttonText, imageUploadText } = state;
 
+    // Safely instantiate FormData on the client side once mounted
+    useEffect(() => {
+        setState({ ...state, formData: new FormData() });
+    }, []);
+
     const handleChange = name => e => {
         const value = name === 'image' ? e.target.files[0] : e.target.value;
-        const imageName = name === 'image' ? event.target.files[0].name : 'Upload image';
-        formData.set(name, value);
+        // FIXED: Changed 'event' to 'e'
+        const imageName = name === 'image' ? e.target.files[0].name : 'Upload image';
+        
+        if (formData) {
+            formData.set(name, value);
+        }
+        
         setState({ ...state, [name]: value, error: '', success: '', imageUploadText: imageName });
     };
 
     const handleSubmit = async e => {
         e.preventDefault();
         setState({ ...state, buttonText: 'Creating' });
-        // console.log(...formData);
+        
         try {
             const response = await axios.post(`${API}/category`, formData, {
                 headers: {
@@ -40,14 +50,18 @@ const Create = ({ user, token }) => {
                 ...state,
                 name: '',
                 content: '',
-                formData: '',
+                formData: new FormData(), // FIXED: Reset to a new FormData instance instead of an empty string
                 buttonText: 'Created',
                 imageUploadText: 'Upload image',
                 success: `${response.data.name} is created`
             });
         } catch (error) {
             console.log('CATEGORY CREATE ERROR', error);
-            setState({ ...state, name: '', buttonText: 'Create', error: error.response.data.error });
+            setState({ 
+                ...state, 
+                buttonText: 'Create', 
+                error: error.response && error.response.data.error ? error.response.data.error : 'Something went wrong' 
+            });
         }
     };
 
