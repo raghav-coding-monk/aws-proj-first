@@ -1,6 +1,6 @@
 import Layout from '../components/Layout';
 import axios from 'axios';
-import withAdmin from '../withAdmin';
+import withAdmin from 'withAdmin';
 import Link from 'next/link';
 import { API } from '../config';
 
